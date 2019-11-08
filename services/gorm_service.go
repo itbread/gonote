@@ -12,12 +12,11 @@ func BuildLikeCondition(db *gorm.DB, key string, value string, tableName ...stri
 	if len(key) < 1 {
 		return db
 	}
-	fullKey := ""
+	fullKey := key
 	if len(tableName) > 0 {
 		fullKey = fmt.Sprintf("%v.%v", tableName[0], key)
-	} else {
-		fullKey = key
 	}
+
 	if len(value) > 1 {
 		query := fmt.Sprintf("%v like ?", fullKey)
 		args := fmt.Sprintf("%v%v%v", "%", value, "%")
