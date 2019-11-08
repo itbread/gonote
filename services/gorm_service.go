@@ -96,7 +96,7 @@ func BuildBetweenCondition(db *gorm.DB, key string, min interface{}, max interfa
 
 	fmt.Printf("======fullKey=%v =min: %v max: %v \n", fullKey, min, max)
 	if min != nil && max != nil {
-		query := fmt.Sprintf("%v between ? and ?", fullKey, min, max)
+		query := fmt.Sprintf("%v between ? and ?", fullKey)
 		db = db.Where(query, min, max)
 	}
 	return db
