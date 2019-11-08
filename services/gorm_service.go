@@ -7,7 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-//获取sql like 查询条件
+//生成sql like 查询条件
 func BuildLikeCondition(db *gorm.DB, key string, value string, tableName ...string) *gorm.DB {
 	if len(key) < 1 {
 		return db
@@ -26,7 +26,7 @@ func BuildLikeCondition(db *gorm.DB, key string, value string, tableName ...stri
 	return db
 }
 
-//获取sql Equal 查询条件
+//生成获取sql Equal 查询条件
 // 注意 value 只支持 int string bool类型
 func BuildEqualCondition(db *gorm.DB, key string, value interface{}, tableName ...string) *gorm.DB {
 	if len(key) < 1 {
@@ -57,7 +57,7 @@ func BuildEqualCondition(db *gorm.DB, key string, value interface{}, tableName .
 	return db
 }
 
-//生成 sql in 条件 value 是 Slice
+//生成 sql in 查询条件 ，注意value 需要是 Slice 类型参数
 func BuildInCondition(db *gorm.DB, key string, value interface{}, tableName ...string) *gorm.DB {
 	if len(key) < 1 {
 		return db
@@ -84,7 +84,7 @@ func BuildInCondition(db *gorm.DB, key string, value interface{}, tableName ...s
 	return db
 }
 
-//获取sql Between 查询条件
+//生成sql Between 查询条件
 func BuildBetweenCondition(db *gorm.DB, key string, min interface{}, max interface{}, tableName ...string) *gorm.DB {
 	if len(key) < 1 {
 		return db
