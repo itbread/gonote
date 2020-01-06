@@ -13,6 +13,7 @@ type Student struct {
 	Num  int64
 	Id   uint64
 	Cource
+	Mycource Cource
 }
 type Cource struct {
 	CourceName string
@@ -33,6 +34,18 @@ func debug(tag, obj interface{}) {
 
 }
 
+func DeepReadFields(reflectType reflect.Type) []reflect.StructField {
+	var fields []reflect.StructField
+	for i := 0; i < reflectType.NumField(); i++ {
+		v := reflectType.Field(i)
+		if v.Anonymous && v.Type.Kind() == reflect.Struct {
+			fields = append(fields, DeepReadFields(v.Type)...)
+		} else {
+			fields = append(fields, v)
+		}
+	}
+	return fields
+}
 func BuildObject(i interface{}, mp map[string]string) {
 	//获取指针指向的真正的数值Value
 	valueOfI := reflect.ValueOf(i).Elem()
@@ -67,21 +80,21 @@ func BuildObject(i interface{}, mp map[string]string) {
 		kind := valueOfI.Field(i).Kind()
 		switch kind {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			int_numbe, err := strconv.ParseInt(vl, 10, 64);
+			int_numbe, err := strconv.ParseInt(vl, 10, 64)
 			fmt.Println("int_numbe======", int_numbe, "  err==", err)
 			if err != nil {
 				continue
 			}
 			valueOfI.Field(i).SetInt(int_numbe)
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			uint_numbe, err := strconv.ParseUint(vl, 10, 64);
+			uint_numbe, err := strconv.ParseUint(vl, 10, 64)
 			fmt.Println("unit_numbe======", uint_numbe, "  err==", err)
 			if err != nil {
 				continue
 			}
 			valueOfI.Field(i).SetUint(uint_numbe)
 		case reflect.Float32, reflect.Float64:
-			float_numbe, err := strconv.ParseFloat(vl, 64);
+			float_numbe, err := strconv.ParseFloat(vl, 64)
 			fmt.Println("unit_numbe======", float_numbe, "  err==", err)
 			if err != nil {
 				continue
@@ -101,7 +114,8 @@ func BuildObject(i interface{}, mp map[string]string) {
 			fmt.Println("string**********", valueOfI.Field(i).Kind())
 			valueOfI.Field(i).SetString(vl)
 		case reflect.Struct:
-
+			fmt.Println("reflect.Struct**********", valueOfI.Field(i).Kind())
+			BuildObject(valueOfI.Field(i), mp)
 		}
 
 		////找到名为Name的属性进行修改值
@@ -114,16 +128,37 @@ func BuildObject(i interface{}, mp map[string]string) {
 	}
 }
 
+func BuildObjectOne(SrcStructPtr interface{}, mp map[string]string) {
+	srcv := reflect.ValueOf(SrcStructPtr)
+	srcV := srcv.Elem()
+	list := DeepReadFields(srcV.Type())
+	for i, v := range list {
+		fmt.Printf("index=%v name=%v type=%v \n", i, v.Name, v.Type)
+	}
+}
+func ReadFilds(SrcStructPtr interface{}) {
+	srcv := reflect.ValueOf(SrcStructPtr)
+	srcV := srcv.Elem()
+	list := DeepReadFields(srcV.Type())
+	for i, v := range list {
+		fmt.Printf("index=%v name=%v type=%v \n", i, v.Name, v.Type)
+	}
+	fmt.Println("list======", len(list))
+}
+
 func main() {
 	stu := Student{Name: "susan", Age: 58}
+	ReadFilds(&stu)
+	//return
 	mp := make(map[string]string)
-	BuildObject(&stu, mp)
+	//BuildObject(&stu, mp)
 	fmt.Println("stu====", stu)
 	var tmp Student
 	mp["Name"] = "itbread"
 	mp["Age"] = "30"
 	mp["Num"] = "1000"
 	mp["Id"] = "123456"
+	mp["CourceName"] = "golang"
 	BuildObject(&tmp, mp)
 	fmt.Println("tmp===", tmp)
 }
